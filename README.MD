@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/aur/license/yaourt.svg)](https://opensource.org/licenses/gpl-license)
+
 ## tCSVString
 
 + Version 1.0
