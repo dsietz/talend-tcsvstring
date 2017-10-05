@@ -1,0 +1,53 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();	    
+    List<IMetadataTable> metadatas = node.getMetadataList();
+    String fldDelimiter = ElementParameterParser.getValue(node,"__FIELD_DELIMITER__");
+    String lnDelimiter = ElementParameterParser.getValue(node,"__LINE_DELIMITER__");
+    String headerInd = ElementParameterParser.getValue(node,"__HEADER__");    
+%>
+int nb_line_<%=cid %> = 0;
+StringBuffer csv_<%=cid %> = new StringBuffer("");
+
+<%
+	if("true".equals(headerInd)){
+		%>
+		//add the column headers
+		<%
+		if ((metadatas!=null)&&(metadatas.size()>0)) {
+			IMetadataTable metadata = metadatas.get(0);
+			if (metadata!=null) {
+				for(IMetadataColumn column : metadata.getListColumns()){
+					%>
+					csv_<%=cid %>.append("<%=column.getLabel() %>");
+					csv_<%=cid %>.append(<%=fldDelimiter %>);
+					<%
+				}
+				%>
+				csv_<%=cid %> = new StringBuffer(csv_<%=cid %>.substring(0,csv_<%=cid %>.toString().length()-1));
+				csv_<%=cid %>.append(<%=lnDelimiter %>);
+				<%
+			}
+		}
+	}
+%>
+
+
+
+

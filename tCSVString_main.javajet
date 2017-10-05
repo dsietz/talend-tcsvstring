@@ -1,0 +1,83 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();	
+    String incomingConnName = null;
+    List<? extends IConnection> incomingConns = node.getIncomingConnections();
+    List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();	
+    List<IMetadataTable> metadatas = node.getMetadataList();
+    String fldDelimiter = ElementParameterParser.getValue(node,"__FIELD_DELIMITER__");
+    String lnDelimiter = ElementParameterParser.getValue(node,"__LINE_DELIMITER__");
+    String headerInd = ElementParameterParser.getValue(node,"__HEADER__");    
+%>
+nb_line_<%=cid %>++;
+
+//iterate through the rows and columns to build the csv string buffer
+<%
+	if ((metadatas!=null)&&(metadatas.size()>0)) {
+		IMetadataTable metadata = metadatas.get(0);
+		if (metadata!=null) {
+			if(incomingConns != null && incomingConns.size()>0){
+				for(IConnection incomingConn : incomingConns) {
+					if (incomingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+						incomingConnName = incomingConn.getName();
+						IMetadataTable inputMetadataTable = incomingConn.getMetadataTable();
+						int mMax = inputMetadataTable.getListColumns().size();
+						int m = 0;				
+						for (IMetadataColumn inputCol : inputMetadataTable.getListColumns()) {
+							m++;
+							if (inputCol.getTalendType().equals("id_String")){								
+								%>
+								csv_<%=cid %>.append(org.apache.commons.lang3.StringEscapeUtils.escapeCsv(<%=incomingConnName%>.<%=inputCol.getLabel()%>));
+								<%
+							}else{
+							%>
+							csv_<%=cid %>.append(<%=incomingConnName%>.<%=inputCol.getLabel()%>);
+							<%
+							}
+							if (m < mMax){
+								%>
+								csv_<%=cid %>.append(<%=fldDelimiter %>);
+								<%
+							}
+							if (m == mMax){
+								%>
+								csv_<%=cid %>.append(<%=lnDelimiter %>);
+								<%
+							}						
+							if(outgoingConns != null && outgoingConns.size() > 0) {
+								for(IConnection outgoingConn : outgoingConns) {
+									if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+										%>
+										<%=outgoingConn.getName()%>.<%=inputCol.getLabel()%> = <%=incomingConnName%>.<%=inputCol.getLabel()%>;
+										<%
+									}
+								}//end of outgoing connections
+							}
+						}//end of columns
+					}
+				}
+			}//end of connection size.
+		}//end of metadatas
+	}
+%>
+
+
+
+
+
