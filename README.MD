@@ -8,7 +8,7 @@ Converts all the rows and their columns to a single csv formated string. The csv
 
 ### Overiew of job flow
 
-![Alt text](job_overview.png?raw=true "Job - Flow Diagram")
+![Alt text](/doc/job_overview.png?raw=true "Job - Flow Diagram")
 
 ### Retrieving the CSV string
 
@@ -16,14 +16,14 @@ Converts all the rows and their columns to a single csv formated string. The csv
 +NOTE: The tCSVString component will pass through the rows of data so you can insert it in the middle of your flow.
 2. Retrieve the CSV string after the flow has compelted by calling tCSVString component's CSV_TEXT property. 
 
-![Alt text](tFixedFlowInput_01.png?raw=true "tFixedFlowInput - retrieve csv string")
+![Alt text](/doc/tFixedFlowInput_01.png?raw=true "tFixedFlowInput - retrieve csv string")
 
 ### Save the CSV string as a *.csv file
 
 3. Pass the csv string to a tFileOutputRaw component
 
-![Alt text](tFileOutputRaw_01.png?raw=true "tFileOutputRaw - create csv file")
+![Alt text](/doc/tFileOutputRaw_01.png?raw=true "tFileOutputRaw - create csv file")
 
 ### CSV file content
 
-![Alt text](output_csv.png?raw=true "CSV File - content")
+![Alt text](/doc/output_csv.png?raw=true "CSV File - content")
